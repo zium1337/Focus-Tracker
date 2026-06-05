@@ -1,0 +1,15 @@
+system_state = {
+    "session_active": False,
+    "timer_minutes": 0,
+    "blocked_sites": [],
+    "face_detected": True,
+    "face_size": 100,
+    "phone_detected": False,
+    "blocked_site_detected": False,
+    "current_url": "",
+    "alarm_active": False,
+    "warning_started": False,
+    "warning_start_time": None,
+    "session_start_time": None,
+    "alarm_count": 0,
+}
