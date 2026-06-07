@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>Focus Tracker Blocker</title>
+</head>
+<body>
+  <h1>Focus Tracker Blocker</h1>
+  <div id="status" class="status">Ładowanie...</div>
+
+  <label for="backend-url">Backend URL</label>
+  <input type="text" id="backend-url" placeholder="http://localhost:8000" />
+  <button id="save-url">Zapisz URL</button>
+
+  <label for="blocked-sites">Blokowane strony (jedna na linię)</label>
+  <textarea id="blocked-sites" rows="5" placeholder="youtube.com&#10;twitter.com"></textarea>
+  <button id="save-sites">Zapisz listę</button>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
