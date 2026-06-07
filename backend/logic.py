@@ -12,35 +12,35 @@ def check_alarm():
     """
 
     # jeśli sesja nie jest aktywna
-    if not system_state["session_active"]:
-        system_state["alarm_active"] = False
-        system_state["warning_started"] = False
+    if not system_state["is_session_active"]:
+        system_state["is_alarm_active"] = False
+        system_state["is_warning_started"] = False
         system_state["warning_start_time"] = None
         return "Sesja nieaktywna"
 
     # sprawdza czy jest problem
     problem = None
 
-    if not system_state["face_detected"]:
+    if not system_state["is_face_detected"]:
         problem = "Brak twarzy"
 
     elif system_state["face_size"] < FACE_SIZE_THRESHOLD:
         problem = "Za daleko od biurka"
 
-    elif system_state["phone_detected"]:
+    elif system_state["is_phone_detected"]:
         problem = "Telefon wykryty"
 
-    elif system_state["blocked_site_detected"]:
+    elif system_state["is_blocked_site_detected"]:
         problem = "Zakazana strona"
 
     # jesli jest problem
     if problem:
 
         # pierwszy moment wykrycia problemu
-        if not system_state["warning_started"]:
-            system_state["warning_started"] = True
+        if not system_state["is_warning_started"]:
+            system_state["is_warning_started"] = True
             system_state["warning_start_time"] = time.time()
-            system_state["alarm_active"] = False
+            system_state["is_alarm_active"] = False
             return f"Ostrzeżenie: {problem}"
 
         # sprawdza ile czasu minelo
@@ -49,18 +49,18 @@ def check_alarm():
         if elapsed >= WARNING_TIME:
 
             # policz alarm tylko jesli wcześniej nie byl aktywny
-            if not system_state["alarm_active"]:
+            if not system_state["is_alarm_active"]:
                 system_state["alarm_count"] += 1
 
-            system_state["alarm_active"] = True
+            system_state["is_alarm_active"] = True
             return problem
 
-        system_state["alarm_active"] = False
+        system_state["is_alarm_active"] = False
         return f"Oczekiwanie... {int(elapsed)}s"
 
     # jesli problem zniknal
-    system_state["warning_started"] = False
+    system_state["is_warning_started"] = False
     system_state["warning_start_time"] = None
-    system_state["alarm_active"] = False
+    system_state["is_alarm_active"] = False
 
     return "OK"

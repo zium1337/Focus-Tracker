@@ -9,19 +9,19 @@ class SessionConfig(BaseModel):
 
 
 class FaceData(BaseModel):
-    face_detected: bool
+    is_face_detected: bool
     face_size: float
 
 
 class PhoneData(BaseModel):
-    phone_detected: bool
+    is_phone_detected: bool
 
 
 class SiteData(BaseModel):
-    blocked_site_detected: bool
+    is_blocked_site_detected: bool
     current_url: str
 
 
 class StatusResponse(BaseModel):
-    session_active: bool
-    alarm_active: bool
+    is_session_active: bool
+    is_alarm_active: bool
