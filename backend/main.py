@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from src.logic import check_alarm
 from src.models import FaceData, PhoneData, SessionConfig, SiteData, StatusResponse
 from src.state import system_state
-from src.face_detection import start_face_detection, stop_face_detection
+from src.cv_detection import start_cv_detection, stop_cv_detection
 
 app = FastAPI()
 app.add_middleware(
@@ -41,7 +41,7 @@ def start_session(config: SessionConfig):
     system_state["session_start_time"] = time.time()
     system_state["alarm_count"] = 0
 
-    start_face_detection()
+    start_cv_detection()
 
     return {"message": "Sesja uruchomiona"}
 
@@ -78,7 +78,7 @@ def stop_session():
     if not system_state["is_session_active"]:
         return {"message": "Brak aktywnej sesji"}
 
-    stop_face_detection()
+    stop_cv_detection()
 
     # oblicz czas sesji
     session_duration = time.time() - system_state["session_start_time"]

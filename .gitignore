@@ -7,3 +7,5 @@ __pycache__/
 Thumbs.db
 Desktop.ini
 node_modules
+.DS_Store
+yolov8n.pt
