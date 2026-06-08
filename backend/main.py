@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from logic import check_alarm
 from models import FaceData, PhoneData, SessionConfig, SiteData, StatusResponse
 from state import system_state
+from src.face_detection import start_face_detection, stop_face_detection
 
 app = FastAPI()
 
@@ -32,6 +33,8 @@ def start_session(config: SessionConfig):
 
     system_state["session_start_time"] = time.time()
     system_state["alarm_count"] = 0
+
+    start_face_detection()
 
     return {"message": "Sesja uruchomiona"}
 
@@ -68,6 +71,8 @@ def stop_session():
 
     if not system_state["is_session_active"]:
         return {"message": "Brak aktywnej sesji"}
+
+    stop_face_detection()
 
     # oblicz czas sesji
     session_duration = time.time() - system_state["session_start_time"]
