@@ -3,7 +3,7 @@ import time
 from src.state import system_state
 
 FACE_HEIGHT_THRESHOLD = 200
-WARNING_TIME = 5  # ile sekund czekamy przed alarmem, mozna zmienic - 5 s na testowanie
+WARNING_TIME = 10  # ile sekund czekamy przed alarmem, mozna zmienic - 10 s na testowanie
 
 
 def check_alarm():
