@@ -1,6 +1,7 @@
 import time
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from src.logic import check_alarm
 from src.models import FaceData, PhoneData, SessionConfig, SiteData, StatusResponse
@@ -8,6 +9,12 @@ from src.state import system_state
 from src.face_detection import start_face_detection, stop_face_detection
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/face-data")
@@ -68,7 +75,6 @@ def get_status():
 
 @app.post("/stop-session")
 def stop_session():
-
     if not system_state["is_session_active"]:
         return {"message": "Brak aktywnej sesji"}
 
