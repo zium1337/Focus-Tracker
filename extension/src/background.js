@@ -11,7 +11,7 @@ async function refreshStatus() {
   let online = true;
   try {
     const status = await fetchStatus();
-    sessionActive = !!status.session_active;
+    sessionActive = !!status.is_session_active;
   } catch (err) {
     online = false;
     console.warn("Focus Tracker: fetchStatus failed", err.message);

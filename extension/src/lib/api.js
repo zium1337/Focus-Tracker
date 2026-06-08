@@ -28,7 +28,7 @@ export async function reportSite(blocked, url) {
   return request("/site-data", {
     method: "POST",
     body: JSON.stringify({
-      blocked_site_detected: blocked,
+      is_blocked_site_detected: blocked,
       current_url: url,
     }),
   });
