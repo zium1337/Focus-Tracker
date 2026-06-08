@@ -10,7 +10,7 @@ class SessionConfig(BaseModel):
 
 class FaceData(BaseModel):
     is_face_detected: bool
-    face_size: float
+    face_height: float
 
 
 class PhoneData(BaseModel):

@@ -1,0 +1,101 @@
+from threading import Thread, Event
+import logging
+import time
+
+import cv2
+import numpy as np
+
+from src.logic import check_alarm
+from src.state import system_state
+
+log = logging.getLogger(__name__)
+
+# detected face as (x, y, w, h) rectangle
+type Face = np.ndarray
+
+DEFAULT_CAMERA_INDEX = 0
+FRONTAL_FACE_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+PROFILE_FACE_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
+
+FACE_WIDTH_INDEX = 2
+FACE_HEIGHT_INDEX = 3
+HORIZONTAL_FLIP_INDEX = 1
+
+SCALE_FACTOR = 1.4
+MIN_NEIGHBORS = 3
+
+DETECTIONS_PER_SECOND = 2
+SECONDS_BETWEEN_DETECTIONS = 1 / DETECTIONS_PER_SECOND
+
+_stop_event = Event()
+_thread = None
+
+
+def start_face_detection() -> None:
+    global _thread
+    if _thread and _thread.is_alive():
+        return
+    _stop_event.clear()
+    _thread = Thread(target=_detection_loop, daemon=True)
+    _thread.start()
+
+
+def stop_face_detection() -> None:
+    _stop_event.set()
+    if _thread:
+        _thread.join()
+
+
+def _detection_loop() -> None:
+    cap = cv2.VideoCapture(1)
+    if not cap.isOpened():
+        log.error("Cannot open camera")
+        # will later implement error handling
+        return
+
+    try:
+        while not _stop_event.is_set():
+            ret, frame = cap.read()
+            if not ret:
+                log.warning("Cannot receive frame")
+                continue
+
+            detected_faces = _search_for_faces(frame)
+
+            _update_system_state(detected_faces)
+            check_alarm()
+            time.sleep(SECONDS_BETWEEN_DETECTIONS)
+    finally:
+        cap.release()
+
+
+def _search_for_faces(frame: np.ndarray) -> list[Face]:
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    flipped_gray_frame = cv2.flip(gray_frame, HORIZONTAL_FLIP_INDEX)
+
+    frontal_faces = FRONTAL_FACE_CASCADE.detectMultiScale(gray_frame, SCALE_FACTOR, MIN_NEIGHBORS)
+    right_profile_faces = PROFILE_FACE_CASCADE.detectMultiScale(gray_frame, SCALE_FACTOR, MIN_NEIGHBORS)
+    left_profile_faces = PROFILE_FACE_CASCADE.detectMultiScale(flipped_gray_frame, SCALE_FACTOR, MIN_NEIGHBORS)
+
+    return [*frontal_faces, *right_profile_faces, *left_profile_faces]
+
+
+def _update_system_state(detected_faces: list[Face]) -> None:
+    is_any_face_detected = len(detected_faces) > 0
+
+    if is_any_face_detected:
+        (x, y, w, h) = _largest_face(detected_faces)
+        system_state["is_face_detected"] = True
+        system_state["face_height"] = int(h)
+    else:
+        log.info("no face detected")
+        system_state["is_face_detected"] = False
+        system_state["face_height"] = 0
+
+
+def _largest_face(faces_list: list[Face]) -> Face:
+    return max(faces_list, key=_face_area)
+
+
+def _face_area(face: Face) -> int:
+    return int(face[FACE_WIDTH_INDEX] * face[FACE_HEIGHT_INDEX])

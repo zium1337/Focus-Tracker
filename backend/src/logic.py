@@ -1,9 +1,9 @@
 import time
 
-from state import system_state
+from src.state import system_state
 
-FACE_SIZE_THRESHOLD = 50
-WARNING_TIME = 10  # ile sekund czekamy przed alarmem, mozna zmienic
+FACE_HEIGHT_THRESHOLD = 200
+WARNING_TIME = 30  # ile sekund czekamy przed alarmem, mozna zmienic - 30 s na testowanie
 
 
 def check_alarm():
@@ -24,7 +24,7 @@ def check_alarm():
     if not system_state["is_face_detected"]:
         problem = "Brak twarzy"
 
-    elif system_state["face_size"] < FACE_SIZE_THRESHOLD:
+    elif system_state["face_height"] < FACE_HEIGHT_THRESHOLD:
         problem = "Za daleko od biurka"
 
     elif system_state["is_phone_detected"]:

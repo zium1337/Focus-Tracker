@@ -2,9 +2,10 @@ import time
 
 from fastapi import FastAPI
 
-from logic import check_alarm
-from models import FaceData, PhoneData, SessionConfig, SiteData, StatusResponse
-from state import system_state
+from src.logic import check_alarm
+from src.models import FaceData, PhoneData, SessionConfig, SiteData, StatusResponse
+from src.state import system_state
+from src.face_detection import start_face_detection, stop_face_detection
 
 app = FastAPI()
 
@@ -12,7 +13,7 @@ app = FastAPI()
 @app.post("/face-data")
 def update_face(data: FaceData):
     system_state["is_face_detected"] = data.is_face_detected
-    system_state["face_size"] = data.face_size
+    system_state["face_height"] = data.face_height
 
     result = check_alarm()
 
@@ -32,6 +33,8 @@ def start_session(config: SessionConfig):
 
     system_state["session_start_time"] = time.time()
     system_state["alarm_count"] = 0
+
+    start_face_detection()
 
     return {"message": "Sesja uruchomiona"}
 
@@ -68,6 +71,8 @@ def stop_session():
 
     if not system_state["is_session_active"]:
         return {"message": "Brak aktywnej sesji"}
+
+    stop_face_detection()
 
     # oblicz czas sesji
     session_duration = time.time() - system_state["session_start_time"]
