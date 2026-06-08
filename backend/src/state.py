@@ -3,7 +3,7 @@ system_state = {
     "timer_minutes": 0,
     "blocked_sites": [],
     "is_face_detected": True,
-    "face_size": 100,
+    "face_height": 100,
     "is_phone_detected": False,
     "is_blocked_site_detected": False,
     "current_url": "",
